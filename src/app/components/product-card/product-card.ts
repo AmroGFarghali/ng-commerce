@@ -1,12 +1,16 @@
 import { Component, inject, input } from '@angular/core';
 import { ProductModel } from '../../models/Products.model';
 import { FavouriteItemsStoreService } from '../../services/favourite-items-storage.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
+  imports: [CommonModule],
   template: `
-    <div class="card bg-base-100 shadow-sm w-full h-full">
+    <div
+      class="card bg-base-100 shadow-sm w-full h-full hover:bg-base-200 transition-all"
+    >
       <figure>
         <img
           [src]="product()?.image"
@@ -45,8 +49,12 @@ import { FavouriteItemsStoreService } from '../../services/favourite-items-stora
                 </svg>
               </button>
               <button
-                class="btn btn-soft relative btn-sm tooltip"
                 data-tip="Favourite"
+                [ngClass]="
+                  isFavourited()
+                    ? 'text-primary btn btn-soft btn-primary btn-sm tooltip t'
+                    : 'btn btn-soft relative btn-sm tooltip '
+                "
                 (click)="toggleFavouriteItem()"
               >
                 <svg
@@ -89,5 +97,11 @@ export class ProductCard {
       this.favouriteItemsLocalStorageService.saveItemToFavourites(
         this.product()!
       );
+  }
+
+  isFavourited(): boolean {
+    return this.favouriteItemsLocalStorageService.checkIfItemExistsInFavourites(
+      this.product()?.id!
+    );
   }
 }
