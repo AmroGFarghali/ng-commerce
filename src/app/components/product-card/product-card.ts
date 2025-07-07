@@ -2,6 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { ProductModel } from '../../models/Products.model';
 import { FavouriteItemsStoreService } from '../../services/favourite-items-storage.service';
 import { CommonModule } from '@angular/common';
+import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-local-storage.service';
 
 @Component({
   selector: 'app-product-card',
@@ -73,7 +74,13 @@ import { CommonModule } from '@angular/common';
               {{ product()?.category }}
             </div>
           </div>
-          <button class="btn btn-primary w-full">Add To Cart</button>
+          <button
+            [disabled]="checkItemAlreadyExist()"
+            (click)="cartLocalStorageService.saveItemToCart(product()!)"
+            class="btn btn-primary w-full transition-all"
+          >
+            Add To Cart
+          </button>
         </div>
       </div>
     </div>
@@ -84,6 +91,8 @@ export class ProductCard {
   private readonly favouriteItemsLocalStorageService = inject(
     FavouriteItemsStoreService
   );
+  readonly cartLocalStorageService = inject(ShoppingCartLocalStorageService);
+
   toggleFavouriteItem() {
     if (
       this.favouriteItemsLocalStorageService.checkIfItemExistsInFavourites(
@@ -102,6 +111,11 @@ export class ProductCard {
   isFavourited(): boolean {
     return this.favouriteItemsLocalStorageService.checkIfItemExistsInFavourites(
       this.product()?.id!
+    );
+  }
+  checkItemAlreadyExist() {
+    return this.cartLocalStorageService.checkIfItemExistsInCart(
+      this.product()!
     );
   }
 }

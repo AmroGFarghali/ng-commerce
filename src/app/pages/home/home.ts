@@ -10,7 +10,7 @@ import { ProductCard } from '../../components/product-card/product-card';
   standalone: true,
   imports: [ProductCard],
   template: `
-    <div class="mt-5 pb-10 px-6">
+    <div class="mt-25 pb-10 px-6">
       <main
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto gap-6 "
       >
