@@ -1,33 +1,49 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-local-storage.service';
 import { CurrencyPipe } from '@angular/common';
 import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-card';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shopping-cart',
   standalone: true,
-  imports: [CurrencyPipe, ShoppingItemCard],
+  imports: [CurrencyPipe, ShoppingItemCard, FormsModule],
   template: `
     <div
-      class="flex flex-col-reverse lg:flex-row min-h-full gap-x-20 gap-y-40 mt-25"
+      class="flex flex-col-reverse lg:flex-row min-h-full gap-x-20 gap-y-20 mt-25"
     >
       <div class="w-full px-12 lg:pt-11 lg:pl-16  ">
-        <form action="">
+        <form (ngSubmit)="handleSubmit()" #userForm="ngForm">
           <div>
-            <h2>Payment Detail</h2>
+            <h2 class="font-bold text-xl uppercase">Payment Detail</h2>
             <p>Complete your order by providing your payment details please</p>
           </div>
 
-          <fieldset>
-            <legend>Shipping address</legend>
+          <fieldset class="mt-10 mb-5">
+            <legend class="font-semibold text-lg uppercase">
+              Shipping address
+            </legend>
             <textarea class="textarea w-full" placeholder="Address"></textarea>
           </fieldset>
 
           <fieldset class="space-y-4">
-            <legend>Payment Method</legend>
+            <legend class="font-semibold text-lg uppercase">
+              Payment Method
+            </legend>
             <div class="space-y-2">
-              <label for="card" class="fieldset-label">Card Number</label>
+              <label for="card" class="fieldset-label text-sm"
+                >Card Number</label
+              >
               <input
+                ngModel
+                name="cardNumber"
                 id="card"
                 type="tel"
                 class="input validator w-full "
@@ -39,10 +55,12 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
             </div>
             <div class="flex gap-4">
               <div class="space-y-2 w-full">
-                <label for="expiry" class="fieldset-label"
+                <label for="expiry" class="fieldset-label text-sm"
                   >Expiration Date</label
                 >
                 <input
+                  ngModel
+                  name="expiry"
                   id="expiry"
                   class="input validator w-full"
                   required
@@ -50,8 +68,10 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
                 />
               </div>
               <div class="space-y-2 w-full">
-                <label for="cvv" class="fieldset-label">CVV</label>
+                <label for="cvv" class="fieldset-label text-sm">CVV</label>
                 <input
+                  ngModel
+                  name="cvv"
                   id="cvv"
                   class="input validator w-full "
                   required
@@ -60,11 +80,13 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
               </div>
             </div>
             <div class="space-y-2 w-full">
-              <label for="nameOnCard" class="fieldset-label"
+              <label for="nameOnCard" class="fieldset-label text-sm"
                 >Name on card</label
               >
               <input
                 id="nameOnCard"
+                ngModel
+                name="fullName"
                 class="input validator w-full "
                 required
                 type="text"
@@ -106,7 +128,11 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-full mt-4">
+          <button
+            type="submit"
+            class="btn btn-primary w-full mt-4"
+            [disabled]="userForm.invalid || cartQuantity() === 0"
+          >
             Pay {{ totalAmount() | currency }}
           </button>
         </form>
@@ -114,14 +140,16 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
 
       <div class="w-full px-12 lg:pt-11 lg:pl-16">
         <h3 class="uppercase text-xl font-bold">Summary Order</h3>
-        <p>
+        <p class="mb-2">
           Here is your cart, please confirm these are the items you would like
           to purchase.
         </p>
         @if (cart().length===0) {
         <div class="mt-15 text-center text-gray-500 text-2xl space-y-2">
           <h2>Please add some items to see your order</h2>
-          <button class="btn btn-info">Continue Shopping</button>
+          <button (click)="router.navigate(['/'])" class="btn btn-info">
+            Continue Shopping
+          </button>
         </div>
 
         } @else{
@@ -137,9 +165,33 @@ import { ShoppingItemCard } from '../../components/shopping-cart-item/shopping-c
         }
       </div>
     </div>
+
+    <dialog #confirmation_modal id="confirmation_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">Confirmation</h3>
+        <p class="py-4">
+          Are you sure you would like to go through with this payment?
+        </p>
+        <div class="modal-action">
+          <form class="flex gap-2" method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn">Cancel</button>
+            <button
+              class="btn btn-primary"
+              (click)="handleConfirm()"
+              type="submit"
+            >
+              Confirm
+            </button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   `,
 })
 export class ShoppingCart {
+  @ViewChild('confirmation_modal') myDialog!: ElementRef<HTMLDialogElement>;
+  readonly router = inject(Router);
   private readonly shoppingCartLocalStorageService = inject(
     ShoppingCartLocalStorageService
   );
@@ -151,4 +203,25 @@ export class ShoppingCart {
       0
     )
   );
+
+  handleSubmit() {
+    // this.shoppingCartLocalStorageService.clearItems();
+    this.openModal();
+  }
+
+  openModal() {
+    if (this.myDialog) {
+      this.myDialog.nativeElement.showModal();
+    }
+  }
+
+  handleConfirm() {
+    this.shoppingCartLocalStorageService.clearItems();
+    this.router.navigate(['/']);
+  }
+  closeModal() {
+    if (this.myDialog) {
+      this.myDialog.nativeElement.close();
+    }
+  }
 }

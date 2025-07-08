@@ -9,6 +9,15 @@ import { FavouriteItemsStoreService } from '../../services/favourite-items-stora
   selector: 'app-favourite-items',
   standalone: true,
   template: `<div class="mt-25 pb-10 px-6">
+    <h1 class="max-w-7xl mx-auto font-bold text-xl uppercase mb-10">
+      Your favourite Items
+    </h1>
+    @if (favouriteProducts().length ===0) {
+    <div class="mt-15 text-center text-gray-500 text-2xl space-y-2">
+      <h2>You currently have no favourited items</h2>
+    </div>
+    }
+
     <main
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto gap-6"
     >
