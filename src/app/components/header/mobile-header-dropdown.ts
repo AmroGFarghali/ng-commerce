@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ThemeService } from '../../services/theme-service';
+import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-local-storage.service';
 
 @Component({
   selector: 'app-mobile-header-dropdown',
@@ -102,6 +103,11 @@ import { ThemeService } from '../../services/theme-service';
                   d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 4.509l-.232-.867A1.875 1.875 0 0 0 3.636 2.25H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z"
                 />
               </svg>
+              <div
+                class=" absolute -top-2 -right-3  px-2 rounded-full badge badge-sm badge-primary"
+              >
+                {{ cartQuantity() }}
+              </div>
             </a>
             <label
               class="swap swap-rotate btn btn-ghost p-2 rounded-full hover:bg-stone-200 transition-colors duration-200"
@@ -223,6 +229,11 @@ import { ThemeService } from '../../services/theme-service';
             d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 4.509l-.232-.867A1.875 1.875 0 0 0 3.636 2.25H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z"
           />
         </svg>
+        <div
+          class=" absolute -top-2 -right-3  px-2 rounded-full badge badge-sm badge-primary"
+        >
+          {{ cartQuantity() }}
+        </div>
       </a>
       <div>
         <label class="swap swap-rotate btn btn-ghost">
@@ -257,6 +268,10 @@ import { ThemeService } from '../../services/theme-service';
 })
 export class MobileHeaderDropdown {
   private readonly themeService = inject(ThemeService);
+  private readonly shoppingCartService = inject(
+    ShoppingCartLocalStorageService
+  );
+  readonly cartQuantity = this.shoppingCartService.cartQuantity;
   toggleTheme() {
     this.themeService.toggleTheme();
   }

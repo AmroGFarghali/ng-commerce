@@ -3,11 +3,12 @@ import { ProductModel } from '../../models/Products.model';
 import { FavouriteItemsStoreService } from '../../services/favourite-items-storage.service';
 import { CommonModule } from '@angular/common';
 import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-local-storage.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div
       class="card bg-base-100 shadow-sm w-full h-full hover:bg-base-200 transition-all"
@@ -29,11 +30,10 @@ import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-lo
         <div class="card-actions flex-col gap-5 ">
           <div class="flex justify-between items-center w-full flex-wrap">
             <div class="flex items-center gap-2">
-              <button
+              <a
                 class="btn btn-soft relative btn-sm tooltip"
                 data-tip="View Detail"
-                routerLink="shopping-cart"
-                routerLinkActive="bg-primary text-white"
+                [routerLink]="['/products', product()?.id]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ import { ShoppingCartLocalStorageService } from '../../services/shopping-cart-lo
                     clip-rule="evenodd"
                   />
                 </svg>
-              </button>
+              </a>
               <button
                 data-tip="Favourite"
                 [ngClass]="

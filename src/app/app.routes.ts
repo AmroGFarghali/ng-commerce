@@ -6,6 +6,7 @@ import { Jewelery } from './pages/jewelry/jewelry';
 import { FavouriteItems } from './pages/favourite-items/favourite-items';
 import { ShoppingCart } from './pages/shopping-cart/shopping-cart';
 import { Electronics } from './pages/electronics/electronics';
+import { ProductDetail } from './pages/product-detail/product-detail';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,4 +16,5 @@ export const routes: Routes = [
   { path: 'electronics', component: Electronics },
   { path: 'favourite-items', component: FavouriteItems },
   { path: 'shopping-cart', component: ShoppingCart },
+  { path: 'products/:productId', component: ProductDetail },
 ];
